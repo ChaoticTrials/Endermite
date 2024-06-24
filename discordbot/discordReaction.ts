@@ -9,27 +9,27 @@ import {
     PartialUser,
     Role,
     User
-} from "discord.js";
-import {ReactEmoteConfig} from "./botConfig";
+} from 'discord.js';
+import {ReactEmoteConfig} from './botConfig';
 
 export async function addReactionRole(discord: DiscordClient, guild: Guild, roleMessage: Message, emote: string, roleId: string) {
     const role: Role | null = await guild.roles.fetch(roleId);
 
     if (role == undefined) {
-        console.log("Role not found: " + roleId);
+        console.log('Role not found: ' + roleId);
         return;
     }
 
     await roleMessage.react(emote);
 
-    discord.on("messageReactionAdd", async (reaction: MessageReaction, user: User | PartialUser) => {
+    discord.on('messageReactionAdd', async (reaction: MessageReaction, user: User | PartialUser) => {
         if (emote == reaction.emoji.id && reaction.message.id == roleMessage.id && reaction.message.guild != null) {
             let member: GuildMember = await reaction.message.guild.members.fetch(user.id);
             await member.roles.add(role.id);
         }
     });
 
-    discord.on("messageReactionRemove", async (reaction: MessageReaction, user: User | PartialUser) => {
+    discord.on('messageReactionRemove', async (reaction: MessageReaction, user: User | PartialUser) => {
         if (emote == reaction.emoji.id && reaction.message.id == roleMessage.id && reaction.message.guild != null) {
             let member: GuildMember = await reaction.message.guild.members.fetch(user.id);
             await member.roles.remove(role.id);

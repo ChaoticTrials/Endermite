@@ -1,7 +1,7 @@
 {
   "name": "endermite",
   "version": "1.0.0",
-  "description": "",
+  "description": "A discord bot to use for the Chaotic Trials Discord server.",
   "main": "index.js",
   "scripts": {
     "build": "tsc"

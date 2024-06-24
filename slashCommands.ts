@@ -1,7 +1,7 @@
 import * as fs from 'fs'
-import {DiscordAuth} from "./discordbot/discordAuth";
-import {promisify} from "util";
-import { Routes } from 'discord.js';
+import {DiscordAuth} from './discordbot/discordAuth';
+import {promisify} from 'util';
+import {Routes} from 'discord.js';
 
 export async function reloadSlashCommands(auth: DiscordAuth, guild: string): Promise<boolean> {
     try {

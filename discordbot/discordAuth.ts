@@ -1,4 +1,4 @@
-import {ActivityType, Client as DiscordClient, GatewayIntentBits, Partials} from "discord.js";
+import {ActivityType, Client as DiscordClient, GatewayIntentBits, Partials} from 'discord.js';
 
 export interface DiscordAuth {
     client: DiscordClient
@@ -7,11 +7,11 @@ export interface DiscordAuth {
 
 export async function registerDiscord(): Promise<DiscordAuth> {
     if (process.env.DISCORD_CLIENT_ID === undefined) {
-        throw new Error("No discord client id provided");
+        throw new Error('No discord client id provided');
     }
 
     if (process.env.DISCORD_TOKEN === undefined) {
-        throw new Error("No discord bot token provided");
+        throw new Error('No discord bot token provided');
     }
 
     const client = new DiscordClient({
@@ -38,7 +38,7 @@ export async function registerDiscord(): Promise<DiscordAuth> {
     await client.login(process.env.DISCORD_TOKEN);
     client.user?.setStatus('online');
     client.user?.setActivity({name: 'you',  type: ActivityType.Watching });
-    console.log("Connected to discord");
+    console.log('Connected to discord');
 
     return {
         client: client,
