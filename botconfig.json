@@ -1,0 +1,22 @@
+{
+  "guild": "1249315926197932074",
+  "role_channel": "1249317195008180244",
+  "role_message": "1254785857861451917",
+  "emote_configs": [
+    {
+      "emote": "1254779926763143303",
+      "role": "1254756824909877248",
+      "description": "Get pinged in <#1249316938962960415>"
+    },
+    {
+      "emote": "1254779068445098114",
+      "role": "1254757648256077944",
+      "description": "Show everyone that you're a mod developer!"
+    },
+    {
+      "emote": "1254779052729045083",
+      "role": "1254757809023881237",
+      "description": "Show everyone that you're a pack developer!"
+    }
+  ]
+}
