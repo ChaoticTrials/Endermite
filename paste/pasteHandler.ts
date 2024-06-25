@@ -9,7 +9,7 @@ import {pasteTaskName} from '../commands/paste';
 const ALLOWED_SUFFIXES: string[] = [
     '.txt', '.log', '.csv', '.md',
     '.cfg', '.json', '.json5', '.toml', '.yml', '.yaml', '.ini', '.conf',
-    '.html', '.htm', '.iml', '.xml',
+    '.html', '.htm', '.iml', '.xml', 'js', 'ts', 'zs', 'py',
     '.sh', '.bat', '.cmd', '.ps1'
 ];
 
