@@ -1,4 +1,4 @@
-import {CacheType, Client as DiscordClient, Interaction, Message} from 'discord.js';
+import {CacheType, Client as DiscordClient, Interaction, Message, TextChannel, ThreadChannel} from 'discord.js';
 import fetch from 'node-fetch';
 
 import * as dcu from '../discordbot/discordUtil';
@@ -24,10 +24,10 @@ export function startPasteHandler(client: DiscordClient): void {
         }
 
         try {
-            const channel = await dcu.tryTextChannel(client, interaction.channelId);
+            const channel = await dcu.tryAnyTextChannel(client, interaction.channelId);
             const msg = await channel?.messages?.fetch(interaction.targetMessage.id);
             if (channel == null || msg == null) {
-                await dcu.sendError(interaction, 'Can\'t create paste: No message selected.')
+                await dcu.sendError(interaction, 'Can\'t create paste: No message selected.');
                 return;
             }
 
@@ -50,22 +50,40 @@ export function startPasteHandler(client: DiscordClient): void {
             const formatted = formatJson(paste.fileName, text);
             const result: Paste = await createPaste(paste.fileName, formatted);
 
-            await channel.send({
-                content: `:page_facing_up: <${result.url}>`,
-                reply: {
-                    messageReference: msg,
-                    failIfNotExists: false
-                },
-                allowedMentions: {
-                    repliedUser: false
-                }
-            });
+            if (await canSend(channel)) {
+                await channel.send({
+                    content: `:page_facing_up: <${result.url}>`,
+                    reply: {
+                        messageReference: msg,
+                        failIfNotExists: false
+                    },
+                    allowedMentions: {
+                        repliedUser: false
+                    }
+                });
 
-            await interaction.editReply({ content: '**Delete paste:** <' + result.delete + '>' });
+                await interaction.editReply({content: '**Delete paste**: <' + result.delete + '>'});
+                return;
+            }
+
+            await interaction.editReply({content: `I can't send messages here. Here's your paste: <${result.url}>\n**Delete paste**: <${result.delete}>`});
         } catch (err) {
             console.log(err);
         }
     });
+}
+
+async function canSend(channel: TextChannel | ThreadChannel): Promise<boolean> {
+    if (!channel.isThread()) {
+        return true;
+    }
+
+    channel = channel as ThreadChannel;
+    if (!channel.joined && channel.joinable) {
+        await channel.join();
+    }
+
+    return channel.joined;
 }
 
 function findTextToPaste(msg: Message): PasteText | 'too_large' | null {

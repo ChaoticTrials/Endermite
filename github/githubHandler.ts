@@ -1,9 +1,9 @@
-import {CacheType, Client as DiscordClient, ForumChannel, Interaction, TextChannel} from 'discord.js';
+import {CacheType, Client as DiscordClient, ForumChannel, Interaction, TextChannel, ThreadChannel} from 'discord.js';
 import fetch from 'node-fetch';
 import {githubTaskName} from '../commands/github';
 import * as dcu from '../discordbot/discordUtil';
 
-export function startGithubHandler(client: DiscordClient, githubChannel: TextChannel, supportThread: ForumChannel): void {
+export function startGithubHandler(client: DiscordClient, githubChannel: TextChannel | ThreadChannel, supportThread: ForumChannel): void {
     client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
         if (!interaction.isMessageContextMenuCommand()) {
             return;

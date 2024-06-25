@@ -1,14 +1,40 @@
-import {ChannelType, Client as DiscordClient, ForumChannel, Interaction, Snowflake, TextChannel} from 'discord.js';
+import {
+    ChannelType,
+    Client as DiscordClient,
+    ForumChannel,
+    Interaction,
+    Snowflake,
+    TextChannel,
+    ThreadChannel
+} from 'discord.js';
 
-export async function tryTextChannel(discord: DiscordClient, id: Snowflake | undefined): Promise<TextChannel | null> {
+export async function tryAnyTextChannel(discordClient: DiscordClient, id: Snowflake | undefined): Promise<TextChannel | ThreadChannel | null> {
     try {
-        return await textChannel(discord, id);
+        return await textChannel(discordClient, id);
     } catch (err) {
         return null;
     }
 }
 
-export async function textChannel(discord: DiscordClient, id: Snowflake | undefined): Promise<TextChannel> {
+export async function tryTextChannel(discord: DiscordClient, id: Snowflake | undefined): Promise<TextChannel | null> {
+    try {
+        const channel = await textChannel(discord, id);
+        return channel.isThread() ? null : channel as TextChannel;
+    } catch (err) {
+        return null;
+    }
+}
+
+export async function tryThreadChannel(discord: DiscordClient, id: Snowflake | undefined): Promise<ThreadChannel | null> {
+    try {
+        const channel = await textChannel(discord, id);
+        return channel.isThread() ? channel as ThreadChannel : null;
+    } catch (err) {
+        return null;
+    }
+}
+
+export async function textChannel(discord: DiscordClient, id: Snowflake | undefined): Promise<TextChannel | ThreadChannel> {
     if (id == undefined) {
         throw new Error('No channel given');
     }
@@ -18,11 +44,11 @@ export async function textChannel(discord: DiscordClient, id: Snowflake | undefi
         throw new Error('Discord channel not found: ' + channel);
     }
 
-    if (channel.type != ChannelType.GuildText) {
-        throw new Error('Discord channel is not a text channel: ' + channel);
+    if (channel.type != ChannelType.GuildText && channel.type != ChannelType.PublicThread) {
+        throw new Error('Discord channel is not a text/thread channel: ' + channel);
     }
 
-    return channel as TextChannel;
+    return channel as TextChannel | ThreadChannel;
 }
 
 export async function forumChannel(discord: DiscordClient, id: Snowflake | undefined): Promise<ForumChannel> {
