@@ -1,8 +1,7 @@
-import {CacheType, Client as DiscordClient, Interaction, Message, TextChannel, ThreadChannel} from 'discord.js';
-import fetch from 'node-fetch';
+import {ChannelType, Client as DiscordClient, Message, Snowflake} from "discord.js";
+import fetch from "node-fetch";
 
 import * as dcu from '../discordbot/discordUtil';
-import {formatJson} from './pasteFormatter';
 import {createPaste, Paste} from './pasteApi';
 import {pasteTaskName} from '../commands/paste';
 
@@ -14,7 +13,7 @@ const ALLOWED_SUFFIXES: string[] = [
 ];
 
 export function startPasteHandler(client: DiscordClient): void {
-    client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
+    client.on('interactionCreate', async interaction => {
         if (!interaction.isMessageContextMenuCommand()) {
             return;
         }
@@ -24,9 +23,14 @@ export function startPasteHandler(client: DiscordClient): void {
         }
 
         try {
-            const channel = await dcu.tryAnyTextChannel(client, interaction.channelId);
-            const msg = await channel?.messages?.fetch(interaction.targetMessage.id);
-            if (channel == null || msg == null) {
+            const channel = await dcu.channel(client, interaction.channelId as Snowflake | null, [ChannelType.GuildText, ChannelType.PublicThread]);
+            if (channel instanceof dcu.ChannelError) {
+                await dcu.sendError(interaction, 'Can\'t create paste: No message selected: ' + channel);
+                return;
+            }
+
+            const msg = await channel.messages.fetch(interaction.targetMessage.id);
+            if (msg == null) {
                 await dcu.sendError(interaction, 'Can\'t create paste: No message selected.');
                 return;
             }
@@ -42,48 +46,30 @@ export function startPasteHandler(client: DiscordClient): void {
                 return;
             }
 
-            await interaction.deferReply({
-                ephemeral: true,
-                fetchReply: true
-            });
-            const text: string = await (await fetch(paste.url)).text();
-            const formatted = formatJson(paste.fileName, text);
-            const result: Paste = await createPaste(paste.fileName, formatted);
-
-            if (await canSend(channel)) {
-                await channel.send({
-                    content: `:page_facing_up: <${result.url}>`,
-                    reply: {
-                        messageReference: msg,
-                        failIfNotExists: false
-                    },
-                    allowedMentions: {
-                        repliedUser: false
-                    }
-                });
-
-                await interaction.editReply({content: '**Delete paste**: <' + result.delete + '>'});
+            if (!dcu.join(channel)) {
+                await dcu.sendError(interaction, 'I can\'t join here.');
                 return;
             }
 
-            await interaction.editReply({content: `I can't send messages here. Here's your paste: <${result.url}>\n**Delete paste**: <${result.delete}>`});
+            const text = await (await fetch(paste.url)).text();
+            const formatted = formatFile(paste.fileName, text);
+            const result: Paste = await createPaste(paste.fileName, formatted);
+
+            await channel.send({
+                content: `:page_facing_up: <${result.url}>`,
+                reply: {
+                    messageReference: msg,
+                    failIfNotExists: false
+                },
+                allowedMentions: {
+                    repliedUser: false
+                }
+            });
+            await interaction.editReply({content: '**Delete paste**: <' + result.delete + '>'});
         } catch (err) {
             console.log(err);
         }
     });
-}
-
-async function canSend(channel: TextChannel | ThreadChannel): Promise<boolean> {
-    if (!channel.isThread()) {
-        return true;
-    }
-
-    channel = channel as ThreadChannel;
-    if (!channel.joined && channel.joinable) {
-        await channel.join();
-    }
-
-    return channel.joined;
 }
 
 function findTextToPaste(msg: Message): PasteText | 'too_large' | null {
