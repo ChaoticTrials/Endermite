@@ -1,9 +1,18 @@
-import {CacheType, Client as DiscordClient, ForumChannel, Interaction, TextChannel, ThreadChannel} from 'discord.js';
+import {
+    CacheType,
+    ChannelType,
+    Client as DiscordClient,
+    ForumChannel,
+    Interaction,
+    PublicThreadChannel,
+    Snowflake,
+    TextChannel
+} from 'discord.js';
 import fetch from 'node-fetch';
 import {githubTaskName} from '../commands/github';
 import * as dcu from '../discordbot/discordUtil';
 
-export function startGithubHandler(client: DiscordClient, githubChannel: TextChannel | ThreadChannel, supportThread: ForumChannel): void {
+export function startGithubHandler(client: DiscordClient, githubChannel: TextChannel | PublicThreadChannel, supportThread: ForumChannel): void {
     client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
         if (!interaction.isMessageContextMenuCommand()) {
             return;
@@ -19,10 +28,15 @@ export function startGithubHandler(client: DiscordClient, githubChannel: TextCha
                 return;
             }
 
-            const channel: TextChannel | null = await dcu.tryTextChannel(client, interaction.channelId);
-            const msg = await channel?.messages?.fetch(interaction.targetMessage.id);
-            if (channel == null || msg == null) {
-                await dcu.sendError(interaction, 'Can\'t process: No message selected.')
+            const channel = await dcu.channel(client, interaction.channelId as Snowflake | null, [ChannelType.GuildText, ChannelType.PublicThread]);
+            if (channel instanceof dcu.ChannelError) {
+                await dcu.sendError(interaction, 'Can\'t process: No message selected: ' + channel);
+                return;
+            }
+
+            const msg = await channel.messages.fetch(interaction.targetMessage.id);
+            if (msg == null) {
+                await dcu.sendError(interaction, 'Can\'t process: No message selected.');
                 return;
             }
 

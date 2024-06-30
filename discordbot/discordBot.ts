@@ -1,5 +1,5 @@
-import {Client as DiscordClient, Guild} from 'discord.js';
-import {forumChannel, textChannel} from './discordUtil';
+import {ChannelType, Client as DiscordClient, ForumChannel, Guild, PublicThreadChannel, TextChannel} from 'discord.js';
+import {channel, ChannelError} from './discordUtil';
 import {BotConfig} from './botConfig';
 import {addReactionRole, editReactionMessage} from './discordReaction';
 import {startPasteHandler} from '../paste/pasteHandler';
@@ -9,10 +9,24 @@ export async function startDiscordBot(discord: DiscordClient, config: BotConfig)
     const guild: Guild = await discord.guilds.fetch(config.guild);
 
     startPasteHandler(discord);
-    startGithubHandler(discord, await textChannel(discord, config.github_channel), await forumChannel(discord, config.support_thread));
+    const githubChannel = await channel(discord, config.github_channel, [ChannelType.GuildText, ChannelType.PublicThread]);
+    if (githubChannel instanceof ChannelError) {
+        githubChannel.throw();
+    }
 
-    const roleChannel = await textChannel(discord, config.role_channel);
-    const roleMessage = await roleChannel.messages.fetch(config.role_message);
+    const supportThread = await channel(discord, config.support_thread, ChannelType.GuildForum);
+    if (supportThread instanceof ChannelError) {
+        supportThread.throw();
+    }
+
+    startGithubHandler(discord, githubChannel as TextChannel | PublicThreadChannel, supportThread as ForumChannel);
+
+    const roleChannel = await channel(discord, config.role_channel, ChannelType.GuildText);
+    if (roleChannel instanceof ChannelError) {
+        roleChannel.throw();
+    }
+
+    const roleMessage = await (roleChannel as TextChannel).messages.fetch(config.role_message);
     for (const emoteConfig of config.emote_configs) {
         await addReactionRole(discord, guild, roleMessage, emoteConfig.emote, emoteConfig.role);
     }

@@ -62,17 +62,19 @@ export async function channel<Type extends ChannelType>(discord: DiscordClient, 
 export async function channel<Types extends ChannelType[]>(discord: DiscordClient, id: Snowflake | undefined | null, type: Types): Promise<TypedChannel<typeof type[number]> | TypedChannelError | NotProvidedChannelError>
 export async function channel(discord: DiscordClient, id: Snowflake | undefined | null, type: ChannelType | [ChannelType] | undefined = undefined): Promise<Channel | ChannelError<ChannelErrorType>> {
     if (id === undefined || id === null) {
-        return new ChannelError(ChannelErrorType.NotProvided, "No channel given.")
+        return new ChannelError(ChannelErrorType.NotProvided, "No channel given.");
     }
 
-    const channel = await discord.channels.fetch(id)
+    const channel = await discord.channels.fetch(id);
     if (channel == null) {
         return new ChannelError(ChannelErrorType.NotFound, "Discord channel not found: " + id);
     }
+
     if (type !== undefined && (Array.isArray(type) ? !(type.includes(channel.type)) : channel.type != type)) {
         return new ChannelError(ChannelErrorType.WrongType, "Discord channel is not of type " + type + ": " + id + " (" + channel.type + ")");
     }
-    return channel
+
+    return channel;
 }
 
 export async function join(channel: Channel): Promise<boolean> {

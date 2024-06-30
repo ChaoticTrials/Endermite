@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 
 import * as dcu from '../discordbot/discordUtil';
 import {createPaste, Paste} from './pasteApi';
+import {formatFile} from './pasteFormatter';
 import {pasteTaskName} from '../commands/paste';
 
 const ALLOWED_SUFFIXES: string[] = [
@@ -46,13 +47,13 @@ export function startPasteHandler(client: DiscordClient): void {
                 return;
             }
 
-            if (!dcu.join(channel)) {
+            if (!await dcu.join(channel)) {
                 await dcu.sendError(interaction, 'I can\'t join here.');
                 return;
             }
 
-            const text = await (await fetch(paste.url)).text();
-            const formatted = formatFile(paste.fileName, text);
+            const text: string = await (await fetch(paste.url)).text();
+            const formatted: string = formatFile(paste.fileName, text);
             const result: Paste = await createPaste(paste.fileName, formatted);
 
             await channel.send({

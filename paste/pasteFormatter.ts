@@ -1,4 +1,4 @@
-export function formatJson(name: string, content: string): string {
+export function formatFile(name: string, content: string): string {
     if (!name.toLowerCase().endsWith('.json')) {
         return content;
     }
