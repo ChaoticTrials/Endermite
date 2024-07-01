@@ -9,7 +9,7 @@ import {pasteTaskName} from '../commands/paste';
 const ALLOWED_SUFFIXES: string[] = [
     '.txt', '.log', '.csv', '.md',
     '.cfg', '.json', '.json5', '.toml', '.yml', '.yaml', '.ini', '.conf',
-    '.html', '.htm', '.iml', '.xml', 'js', 'ts', 'zs', 'py',
+    '.html', '.htm', '.iml', '.xml', 'js', 'ts', 'zs', 'py', 'java',
     '.sh', '.bat', '.cmd', '.ps1'
 ];
 
@@ -54,7 +54,12 @@ export function startPasteHandler(client: DiscordClient): void {
 
             const text: string = await (await fetch(paste.url)).text();
             const formatted: string = formatFile(paste.fileName, text);
-            const result: Paste = await createPaste(paste.fileName, formatted);
+            const result: Paste | null = await createPaste(paste.fileName, formatted);
+
+            if (result == null) {
+                await interaction.editReply({content: 'Failed to create paste.'});
+                return;
+            }
 
             await channel.send({
                 content: `:page_facing_up: <${result.url}>`,
