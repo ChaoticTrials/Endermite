@@ -52,6 +52,11 @@ export function startPasteHandler(client: DiscordClient): void {
                 return;
             }
 
+            await interaction.deferReply({
+                ephemeral: true,
+                fetchReply: true
+            });
+
             const text: string = await (await fetch(paste.url)).text();
             const formatted: string = formatFile(paste.fileName, text);
             const result: Paste | null = await createPaste(paste.fileName, formatted);
@@ -83,7 +88,7 @@ function findTextToPaste(msg: Message): PasteText | 'too_large' | null {
     for (const attachment of msg.attachments.values()) {
         const name = attachment.name;
         if (name != null && ALLOWED_SUFFIXES.some(suffix => name.toLowerCase().endsWith(suffix))) {
-            if (attachment.size > (100 * 1024)) {
+            if (attachment.size > (6 * 1024 * 1024)) { // paste.ee limit
                 defaultReturn = 'too_large';
             } else {
                 return {

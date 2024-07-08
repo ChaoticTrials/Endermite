@@ -56,7 +56,7 @@ export function startGithubHandler(client: DiscordClient, githubChannel: TextCha
                     fetchReply: true
                 });
 
-                let issueName = await getIssueName(owner, name, issue);
+                const issueName = await getIssueName(owner, name, issue);
                 const newThread = await supportThread.threads.create({
                     message: {content: `${interaction.user} opened this thread based on ${msg.url} to discuss about [this issue](${url})`},
                     name: issueName

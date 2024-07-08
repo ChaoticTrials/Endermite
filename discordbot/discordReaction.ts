@@ -24,14 +24,14 @@ export async function addReactionRole(discord: DiscordClient, guild: Guild, role
 
     discord.on('messageReactionAdd', async (reaction: MessageReaction, user: User | PartialUser) => {
         if (emote == reaction.emoji.id && reaction.message.id == roleMessage.id && reaction.message.guild != null) {
-            let member: GuildMember = await reaction.message.guild.members.fetch(user.id);
+            const member: GuildMember = await reaction.message.guild.members.fetch(user.id);
             await member.roles.add(role.id);
         }
     });
 
     discord.on('messageReactionRemove', async (reaction: MessageReaction, user: User | PartialUser) => {
         if (emote == reaction.emoji.id && reaction.message.id == roleMessage.id && reaction.message.guild != null) {
-            let member: GuildMember = await reaction.message.guild.members.fetch(user.id);
+            const member: GuildMember = await reaction.message.guild.members.fetch(user.id);
             await member.roles.remove(role.id);
         }
     });
@@ -43,7 +43,7 @@ export async function editReactionMessage(guild: Guild, roleMessage: Message, co
         return;
     }
 
-    let embed = new EmbedBuilder();
+    const embed = new EmbedBuilder();
     embed.setTitle('By reacting to this message, you\'ll get the corresponding role.');
     embed.setColor(0x46325B);
     embed.setTimestamp();
@@ -53,8 +53,8 @@ export async function editReactionMessage(guild: Guild, roleMessage: Message, co
     });
 
     for (const config of configs) {
-        let emoji: GuildEmoji = await guild.emojis.fetch(config.emote);
-        let role: Role | null = await guild.roles.fetch(config.role);
+        const emoji: GuildEmoji = await guild.emojis.fetch(config.emote);
+        const role: Role | null = await guild.roles.fetch(config.role);
         if (emoji == null) {
             console.log('Emoji not found: ' + config.emote);
             continue;
