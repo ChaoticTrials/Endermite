@@ -26,7 +26,14 @@ export async function startDiscordBot(discord: DiscordClient, config: BotConfig)
         roleChannel.throw();
     }
 
-    const roleMessage = await (roleChannel as TextChannel).messages.fetch(config.role_message);
+    let roleMessage;
+    if (!config.role_message) {
+        roleMessage = await (roleChannel as TextChannel).send('Wait for it...');
+        config.role_message = roleMessage.id;
+    } else {
+        roleMessage = await (roleChannel as TextChannel).messages.fetch(config.role_message);
+    }
+
     for (const emoteConfig of config.emote_configs) {
         await addReactionRole(discord, guild, roleMessage, emoteConfig.emote, emoteConfig.role);
     }

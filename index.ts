@@ -9,9 +9,12 @@ import {BotConfig} from './discordbot/botConfig';
 import {DiscordAuth} from './discordbot/discordAuth';
 
 (async() => {
-    const config: BotConfig = JSON.parse(fs.readFileSync('botconfig.json', { encoding: 'utf-8' }));
+    let configFile = 'botconfig.json';
+    const config: BotConfig = JSON.parse(fs.readFileSync(configFile, { encoding: 'utf-8' }));
     const discord: DiscordAuth = await discordAuth.registerDiscord();
     await slashCommands.reloadSlashCommands(discord, config.guild);
     await discordBot.startDiscordBot(discord.client, config);
+
+    fs.writeFileSync(configFile, JSON.stringify(config, null, 2), {encoding: 'utf-8'});
     console.log('Discord bot started.');
 })();
