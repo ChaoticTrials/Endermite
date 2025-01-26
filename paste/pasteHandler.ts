@@ -45,6 +45,11 @@ export function startPasteHandler(client: DiscordClient): void {
                 return;
             }
 
+            await interaction.deferReply({
+                ephemeral: true,
+                fetchReply: true
+            });
+
             const paste = await findTextToPaste(msg, interaction);
             if (paste == null) {
                 await dcu.sendError(interaction, 'Can\'t create paste: No suitable attachment found.');
@@ -137,9 +142,7 @@ async function findTextToPaste(msg: Message, interaction: MessageContextMenuComm
 
     // If there are multiple valid attachments, prompt the user to pick one
     if (validAttachments.length > 1) {
-        await interaction.reply({
-            ephemeral: true,
-            fetchReply: true,
+        await interaction.editReply({
             content: 'Please select the file you would like to upload:',
             components: [
                 {
