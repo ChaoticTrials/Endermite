@@ -19,6 +19,11 @@
       "emote": "1254779052729045083",
       "role": "1254757809023881237",
       "description": "Show everyone that you're a pack developer!"
+    },
+    {
+      "emote": "1338191536130621574",
+      "role": "1338189701194186844",
+      "description": "Get access to <#1338182105149997168> where dev builds will be announced."
     }
   ]
 }
