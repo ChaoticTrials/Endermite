@@ -140,6 +140,15 @@ async function findTextToPaste(msg: Message, interaction: MessageContextMenuComm
         return validAttachments[0];
     }
 
+    if (validAttachments.length > 5) {
+        await interaction.editReply({
+            content: 'Too many files. Unable to create buttons for selection. Please do it yourself, sorry <3',
+            components: []
+        });
+
+        return null;
+    }
+
     // If there are multiple valid attachments, prompt the user to pick one
     if (validAttachments.length > 1) {
         await interaction.editReply({

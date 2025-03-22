@@ -87,10 +87,12 @@ export async function join(channel: Channel): Promise<boolean> {
 
 export async function sendError(interaction: Interaction, text: string): Promise<void> {
     if (interaction.isCommand()) {
-        await interaction.reply({
-            content: text,
-            ephemeral: true,
-            fetchReply: true
-        });
+        if (!interaction.deferred && !interaction.replied) {
+            await interaction.reply({
+                content: text,
+                ephemeral: true,
+                fetchReply: true
+            });
+        }
     }
 }
