@@ -4,6 +4,7 @@ import {BotConfig} from './botConfig';
 import {addReactionRole, editReactionMessage} from './discordReaction';
 import {startPasteHandler} from '../paste/pasteHandler';
 import {startGithubHandler} from '../github/githubHandler';
+import {startValidationHandler} from "../validater/validateHandler";
 
 export async function startDiscordBot(discord: DiscordClient, config: BotConfig): Promise<void> {
     const guild: Guild = await discord.guilds.fetch(config.guild);
@@ -20,6 +21,7 @@ export async function startDiscordBot(discord: DiscordClient, config: BotConfig)
     }
 
     startGithubHandler(discord, githubChannel as TextChannel | PublicThreadChannel, supportThread as ForumChannel);
+    startValidationHandler(discord);
 
     const roleChannel = await channel(discord, config.role_channel, ChannelType.GuildText);
     if (roleChannel instanceof ChannelError) {
