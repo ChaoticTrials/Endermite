@@ -1,6 +1,6 @@
 {
   "name": "endermite",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A discord bot to use for the Chaotic Trials Discord server.",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "dependencies": {
     "@types/node": "20.14.8",
     "@types/node-fetch": "2.6.11",
-    "discord.js": "14.15.3",
+    "discord.js": "14.18.0",
     "dotenv": "16.4.5",
     "node-fetch": "2.7.0",
     "typescript": "5.5.2"
