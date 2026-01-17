@@ -16,7 +16,7 @@ export async function createPaste(title: string | null, content: string): Promis
             return null;
         }
 
-        const data: CreatePasteResponse = await response.json();
+        const data: CreatePasteResponse = await response.json() as CreatePasteResponse;
         return {
             url: data.url,
             delete: `https://paste.moddingx.org/delete/${encodeURIComponent(data.edit)}`

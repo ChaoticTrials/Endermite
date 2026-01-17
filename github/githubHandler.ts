@@ -9,7 +9,7 @@ import {
     TextChannel
 } from 'discord.js';
 import fetch from 'node-fetch';
-import {githubTaskName} from '../commands/github';
+import { githubTaskName } from '../commands/github';
 import * as dcu from '../discordbot/discordUtil';
 
 export function startGithubHandler(client: DiscordClient, githubChannel: TextChannel | PublicThreadChannel, supportThread: ForumChannel): void {
@@ -97,7 +97,7 @@ async function getIssueName(owner: string, name: string, issueNumber: string): P
         if (!response.ok) {
             return prefix;
         }
-        const data = await response.json();
+        const data = await response.json() as { title: string };
         return `[${prefix}] ${data.title}`;
     } catch (error) {
         return prefix;
