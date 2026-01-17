@@ -217,7 +217,7 @@ function isTarArchive(buf: Buffer): boolean {
     // POSIX tar magic "ustar" at offset 257
     if (buf.length < 263) return false;
     let magic = buf.subarray(257, 263).toString('utf8');
-    return magic === 'ustar\0' || magic === 'ustar';
+    return magic === 'ustar\0' || magic === 'ustar ';
 }
 
 async function extractSingleAllowedFileFromTar(tarBuf: Buffer): Promise<{ fileName: string; text: string } | null> {
