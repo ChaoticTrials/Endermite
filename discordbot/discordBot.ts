@@ -1,15 +1,24 @@
-import {ChannelType, Client as DiscordClient, ForumChannel, Guild, PublicThreadChannel, TextChannel} from 'discord.js';
-import {channel, ChannelError} from './discordUtil';
-import {BotConfig} from './botConfig';
-import {addReactionRole, editReactionMessage} from './discordReaction';
-import {startPasteHandler} from '../paste/pasteHandler';
-import {startGithubHandler} from '../github/githubHandler';
-import {startValidationHandler} from "../validater/validateHandler";
+import {
+    ChannelType,
+    Client as DiscordClient,
+    ForumChannel,
+    Guild,
+    PublicThreadChannel,
+    TextChannel
+} from 'discord.js';
+import { channel, ChannelError } from './discordUtil';
+import { BotConfig } from './botConfig';
+import { addReactionRole, editReactionMessage } from './discordReaction';
+import { startPasteHandler } from '../paste/pasteHandler';
+import { startGithubHandler } from '../github/githubHandler';
+import { startValidationHandler } from "../validater/validateHandler";
+import { startDumpHandler } from "../dump/dumpHandler";
 
 export async function startDiscordBot(discord: DiscordClient, config: BotConfig): Promise<void> {
     const guild: Guild = await discord.guilds.fetch(config.guild);
 
     startPasteHandler(discord);
+    startDumpHandler(discord);
     const githubChannel = await channel(discord, config.github_channel, [ChannelType.GuildText, ChannelType.PublicThread]);
     if (githubChannel instanceof ChannelError) {
         githubChannel.throw();
