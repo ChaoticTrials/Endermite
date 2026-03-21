@@ -43,6 +43,10 @@ export function startPasteHandler(client: DiscordClient): void {
             return;
         }
 
+        await interaction.deferReply({
+            ephemeral: true
+        });
+
         try {
             const channel = await dcu.channel(client, interaction.channelId as Snowflake | null, [ ChannelType.GuildText, ChannelType.PublicThread ]);
             if (channel instanceof dcu.ChannelError) {
@@ -81,11 +85,6 @@ export function startPasteHandler(client: DiscordClient): void {
                 }
                 return;
             }
-
-            await interaction.deferReply({
-                ephemeral: true,
-                fetchReply: true
-            });
 
             const formatted: string = formatFile(fileName, text);
             const result: Paste | null = await createPaste(fileName, formatted);
