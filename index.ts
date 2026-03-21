@@ -8,7 +8,7 @@ import { BotConfig } from './discordbot/botConfig';
 require('dotenv').config({ path: 'tokens.env' });
 
 (async() => {
-    let configFile = 'testcfg.json';
+    let configFile = 'botconfig.json';
     const config: BotConfig = JSON.parse(fs.readFileSync(configFile, { encoding: 'utf-8' }));
     const discord: DiscordAuth = await discordAuth.registerDiscord();
     await slashCommands.reloadSlashCommands(discord, config.guild);
